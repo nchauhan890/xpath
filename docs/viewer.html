@@ -24,16 +24,34 @@
       // console.log(res)
       for (let el of prev) {
         el.classList.remove('highlight')
+        el.classList.remove('highlight-attr')
+        el.classList.remove('highlight-text')
       }
       prev = []
       if (!success) { 
         return 
       }
+      let msgs = []
       for (let i = 0; i < res.snapshotLength; i++) {
         el = res.snapshotItem(i)
-        el.classList.add('highlight')
-        prev.push(el)
+        // console.log(el)
+        if (el.nodeType == Node.ELEMENT_NODE) {
+          el.classList.add('highlight')
+          prev.push(el)
+        } else if (el.nodeType == Node.ATTRIBUTE_NODE) {
+          msgs.push(el.nodeName + " = " + el.nodeValue.toString())
+          prev.push(el.ownerElement)
+          el.ownerElement.classList.add('highlight-attr')
+        } else if (el.nodeType == Node.TEXT_NODE) {
+          msgs.push(el.nodeValue)
+          prev.push(el.parentElement)
+          el.parentElement.classList.add('highlight-text')
+        }
       }
+      if (msgs.length == 0) {
+        msgs.push(res.snapshotLength.toString() + (res.snapshotLength == 1 ? " element" : " elements"))
+      }
+      document.getElementById('msg').innerText = 'Found:\n' + msgs.join('\n')
     }
     prev = []
   </script>
@@ -43,13 +61,13 @@
     <!-- <textarea class="source-box" ></textarea> -->
     <div class="row">
       <div class="column xp-search">
-        <input type="text" id="search" class="search-box" oninput="xp_search()"/>
-        <button type="button" onclick="xp_search()">Apply</button>
-        <span id="msg"></span>
+        <div><input type="text" id="search" class="search-box search-fixed" oninput="xp_search()"/></div>
+        <div><button type="button" onclick="xp_search()" class="search-fixed">Apply</button></div>
+        <div><span id="msg" class="msg-box"></span></div>
       </div>
     </div>
     <div class="row overflow">
-      <div class="column" id="demo" style="width: 40%;">
+      <div class="column d2" id="demo" style="width: 40%;">
         <div id="warningCard1" class="warning-card" data-warning-id="4fe9b6a3-4c00-4c66-902d-5a081b6d16d8">
           <div class="warning-period">
             <table>
@@ -229,7 +247,7 @@
             </div>
           </div>
         </div>
-      <div class="column" id="source-copy" style="width: 60%;">
+      <div class="column d3 " id="source-copy" style="width: 60%;">
       </div>
     </div>
   </div>
