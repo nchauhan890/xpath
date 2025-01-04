@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>XPath Viewer</title>
+    <link rel="stylesheet" href="test.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script>
+      function toggle(el) {
+        el.classList.toggle('active')
+        let next = el.nextElementSibling
+        console.log(next.scrollHeight)
+        if (next.style.maxHeight) {
+          next.style.maxHeight = next.scrollHeight + 'px'
+          setTimeout(() => {
+            next.style.maxHeight = null
+          }, 0)
+        } else {
+          next.style.maxHeight = next.scrollHeight + 'px'
+          setTimeout(() => {
+            next.style.maxHeight = 'max-content'
+          }, 200)
+        }
+      }
+    </script>
+    <script type="text/javascript">
+      function xp_search(key) {
+        let success = false
+        if (key.trim() == "") {
+          document.getElementById('msg').innerText = ''
+          remove(prev)
+          prev = []
+          return
+        }
+        let msg = ""
+        if (key.startsWith('/')) {
+          key = "." + key
+        } else {
+          key = "./" + key
+        }
+        try {
+          var res = document.evaluate(key, document.getElementById("xp-content"), null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
+          success = true
+        } catch (er) {
+          msg = er.message.replace(/Failed to execute 'evaluate' on 'Document':/i, "")
+        } 
+        document.getElementById('msg').innerText = msg
+        // console.log(res)
+        remove(prev)
+        prev = []
+        if (!success) { 
+          return 
+        }
+        let msgs = []
+        for (let i = 0; i < res.snapshotLength; i++) {
+          el = res.snapshotItem(i)
+          // console.log(el)
+          if (el.nodeType == Node.ELEMENT_NODE) {
+            el.classList.add('highlight')
+            prev.push(el)
+          } else if (el.nodeType == Node.ATTRIBUTE_NODE) {
+            msgs.push(el.nodeName + " = " + el.nodeValue.toString())
+            prev.push(el.ownerElement)
+            el.ownerElement.classList.add('highlight-attr')
+          } else if (el.nodeType == Node.TEXT_NODE) {
+            msgs.push(el.nodeValue)
+            prev.push(el.parentElement)
+            el.parentElement.classList.add('highlight-text')
+          }
+        }
+        document.getElementById('msg').innerText = (
+          "Found " + res.snapshotLength.toString() + (res.snapshotLength == 1 ? " element: " : " elements: ")
+          + msgs.join(',   ')
+        )
+      }
+      function remove(prev) {
+        for (let el of prev) {
+          el.classList.remove('highlight')
+          el.classList.remove('highlight-attr')
+          el.classList.remove('highlight-text')
+        }
+      }
+      function test(expr) {
+        let box = document.getElementById('xp-expr')
+        box.value = expr
+        box.oninput()
+      }
+      var prev = []
+    </script>
+  </head>
+  <body>
+    <!-- <nav class="nav">
+      <span class="nav-a">A</span>
+      <span class="nav-b">B</span>
+      <span class="nav-d">D</span>
+    </nav> -->
+    <h2>HTML and XPath resources and interactive tool</h2>
+    <section onclick="toggle(this)">HTML resources</section>
+    <div class="section-block">
+      <div class="section-body">Hello</div>
+    </div>
+
+    <section onclick="toggle(this)">XPath introductory guide</section>
+    <div class="section-block">
+      <div class="section-body">
+        <h3>Path syntax</h3>
+        <p>XPath expressions describe a given set of elements on the page meet criteria based on
+          their position in the HTML and their attributes and text content. They are specified
+          similarly to file paths, using slashes. Each component of the path refers to a new element.
+          The following pieces of basic syntax are used:
+        </p>
+        <table class="xp-mono-1 xp-table">
+          <tr>
+            <td>.</td>
+            <td>Current node</td>
+          </tr>
+          <tr>
+            <td>..</td>
+            <td>Parent node</td>
+          </tr>
+          <tr>
+            <td>/</td>
+            <td>Element separator (direct child)</td>
+          </tr>
+          <tr>
+            <td>//</td>
+            <td>Element separator (child at any depth)</td>
+          </tr>
+          <tr>
+            <td>*</td>
+            <td>Any element name</td>
+          </tr>
+        </table>
+        <p>Most initial paths will begin with <span class="mono">//</span> so that they match
+        elements starting at any depth relative to the root of the HTML document. Once an
+        element has been located, paths generally have no prefix, <span class="mono">./</span> (same as no prefix) or
+        <span class="mono">.//</span>. This will start subsequent searches from the current
+        element rather than from the root.</p>
+        <h5>Examples of basic paths</h5>
+        <table class="xp-mono-1 xp-table">
+          <tr>
+            <td class="testable">//div</td>
+            <td>Selects all <span class="mono">divs</span> (at any depth from the root)</td>
+          </tr>
+          <tr>
+            <td>//td/*</td>
+            <td>Selects all immediate child elements of all table cells</td>
+          </tr>
+          <tr>
+            <td>h4 or ./h4</td>
+            <td>Selects headers that are direct children of the current element</td>
+          </tr>
+          <tr>
+            <td class="testable">.//p</td>
+            <td>Selects any paragraphs nested (at any depth) in the current element</td>
+          </tr>
+          <tr>
+            <td class="testable">.//p/..</td>
+            <td>Finds paragraphs (as above), and then selects the parent element of each one</td>
+          </tr>
+        </table>
+        <details>
+          <summary><h3>Attributes and text</h3></summary>
+          <p>As well as elements, their attribute values and inner text content can also be
+            selected. These can be done using the syntax <span class="mono">@attribute</span>
+            and <span class="mono">text()</span>. These should be written as individual
+            path components
+          </p>
+          <h5>Examples of selecting attributes and text</h5>
+          <table class="xp-mono-1 xp-table">
+            <tr>
+              <td>@class</td>
+              <td>Select the class/classes of the current node (multiple classes are still a single string)</td>
+            </tr>
+            <tr>
+              <td class="testable">//a/@href</td>
+              <td>Selects all <span class="mono">href</span> attributes (URLs) of all hyperlinks</td>
+            </tr>
+            <tr>
+              <td class="testable">//h4/text()</td>
+              <td>Selects the text of all <span class="mono">h4</span> headers</td>
+            </tr>
+          </table>
+        </details>
+        
+        <details>
+          <summary><h3>Predicates - more granular filtering</h3></summary>
+          <p>In order to select more specific elements, predicates are used to apply further criteria. Square
+            brackets are placed after the element and the condition is placed inside. Read on for examples
+            of how to do this.
+          </p>
+          <table class="xp-mono-2 xp-table">
+            <tr>
+              <td>n-th sibling</td>  
+              <td>[n]</td>
+            </tr>
+            <tr>
+              <td>Attribute equals value</td>
+              <td>[@attribute="value"]</td>
+            </tr>
+            <tr>
+              <td>Text equals value</td>
+              <td>[text() = "value"]</td>
+            </tr>
+            <tr>
+              <td>Text contains value</td>
+              <td>[contains(text(), "value")]</td>
+            </tr>
+            <tr>
+              <td>Element has attribute</td>
+              <td>[@attribute]</td>
+            </tr>
+            <tr>
+              <td>Element has child of given tag type</td>
+              <td>[tagname]</td>
+            </tr>
+          </table>
+
+          <h4>Examples</h4>
+          <table class="xp-mono-1 xp-table">
+            <tr>
+              <td class="testable">//ul/li[2]</td>  
+              <td>Select the 2nd list item (<span class="mono">li</span>) of all unordered lists</td>
+            </tr>
+            <tr>
+              <td>//input[@type="password"]</td>
+              <td>Select all input fields that are password boxes</td>
+            </tr>
+            <tr>
+              <td class="testable">//a[contains(@href, "warnings")]</td>
+              <td>Select all hyperlinks that contain the text "warnings" in their URLs</td>
+            </tr>
+            <tr>
+              <td>//p[@id]</td>
+              <td>Select all paragraphs that have an ID attribute</td>
+            </tr>
+            <tr>
+              <td class="testable">//div[table]</td>
+              <td>Select all <span class="mono">divs</span> that have a table as an
+                immediate child element</td>
+            </tr>
+          </table>
+          <p><i>Note about using <span class="mono">@class</span></i>: If an element has multiple
+          classes given, the attribute is still a single string value. It's usually better to use the
+          syntax <span class="mono">[contains(@class, "target-class")]</span> than directly comparing
+          (with <span class="mono">[@class = "target-class"]</span>), because this allows you to
+          check if a class appears in the list of classes (regardless of how many there are)</p>
+        </details>
+
+      </div>
+    </div>
+
+    <section id="xp-section" onclick="toggle(this)">XPath tool</section>
+    <div class="section-block">
+      <div class="section-body">
+        <p>Use this tool to test XPath expressions against the HTML extract below.</p>
+        <div class="xp-container">
+          <div class="xp-search">
+            <span>XPath expression </span>
+            <input type="text" id="xp-expr" oninput="xp_search(this.value)">
+          </div>
+          <div class="xp-output" id="msg">
+          </div>
+          <div class="xp-body">
+            <div id="xp-content"class="xp-content"></div>
+            <div class="xp-html"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div hidden id="source-html">
+      <div id="warningCard1" class="warning-card" data-warning-id="4fe9b6a3-4c00-4c66-902d-5a081b6d16d8">
+        <div class="warning-period">
+          <table>
+            <thead></thead>
+            <tbody>
+              <tr>
+                <td colspan="2" class="warning-type YELLOW">Yellow warning</td>
+                <td>Wind</td>
+              </tr>
+              <tr class="valid-from">
+                <td>Valid from</td>
+                <td>07:00</td>
+                <td>Tomorrow</td>
+              </tr>
+              <tr class="valid-to">
+                <td>Until</td>
+                <td>23:59</td>
+                <td>Tomorrow</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="warning-description">
+          <div class="warning-regions">
+            <h3>Regions and local authorities affected:</h3>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">Central, Tayside &amp; Fife</h4>
+              <ul id="warning1Authorities0" class="local-authorities clear-fix">
+                <li class="print-format">Angus</li>
+                <li class="print-format">Clackmannanshire</li>
+                <li class="print-format">Dundee</li>
+                <li class="print-format">Falkirk</li>
+                <li class="print-format">Fife</li>
+                <li class="print-format">Perth and Kinross</li>
+                <li class="print-format">Stirling</li>
+              </ul>
+            </div>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">East Midlands</h4>
+              <ul id="warning1Authorities1" class="local-authorities clear-fix">
+                <li class="print-format">Derbyshire</li>
+              </ul>
+            </div>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">Grampian</h4>
+              <ul id="warning1Authorities2" class="local-authorities clear-fix">
+                <li class="print-format">Aberdeen</li>
+                <li class="print-format">Aberdeenshire</li>
+                <li class="print-format">Moray</li>
+              </ul>
+            </div>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">Highlands &amp; Eilean Siar</h4>
+              <ul id="warning1Authorities3" class="local-authorities clear-fix">
+                <li class="print-format">Na h-Eileanan Siar</li>
+                <li class="print-format">Highland</li>
+              </ul>
+            </div>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">North East England</h4>
+              <ul id="warning1Authorities4" class="local-authorities clear-fix">
+                <li class="print-format">Darlington</li>
+                <li class="print-format">Durham</li>
+                <li class="print-format">Gateshead</li>
+                <li class="print-format">Newcastle upon Tyne</li>
+                <li class="print-format">North Tyneside</li>
+                <li class="print-format">Northumberland</li>
+                <li class="print-format">South Tyneside</li>
+                <li class="print-format">Stockton-on-Tees</li>
+                <li class="print-format">Sunderland</li>
+              </ul>
+            </div>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">North West England</h4>
+              <ul id="warning1Authorities5" class="local-authorities clear-fix">
+                <li class="print-format">Blackburn with Darwen</li>
+                <li class="print-format">Blackpool</li>
+                <li class="print-format">Cheshire West and Chester</li>
+                <li class="print-format">Cumbria</li>
+                <li class="print-format">Greater Manchester</li>
+                <li class="print-format">Halton</li>
+                <li class="print-format">Lancashire</li>
+                <li class="print-format">Merseyside</li>
+                <li class="print-format">Warrington</li>
+              </ul>
+            </div>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">Northern Ireland</h4>
+              <ul id="warning1Authorities6" class="local-authorities clear-fix">
+                <li class="print-format">County Antrim</li>
+                <li class="print-format">County Down</li>
+                <li class="print-format">County Fermanagh</li>
+                <li class="print-format">County Londonderry</li>
+                <li class="print-format">County Tyrone</li>
+              </ul>
+            </div>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">SW Scotland, Lothian Borders</h4>
+              <ul id="warning1Authorities7" class="local-authorities clear-fix">
+                <li class="print-format">Dumfries and Galloway</li>
+                <li class="print-format">East Lothian</li>
+                <li class="print-format">Edinburgh</li>
+                <li class="print-format">Midlothian Council</li>
+                <li class="print-format">Scottish Borders</li>
+                <li class="print-format">West Lothian</li>
+              </ul>
+            </div>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">Strathclyde</h4>
+              <ul id="warning1Authorities8" class="local-authorities clear-fix">
+                <li class="print-format">Argyll and Bute</li>
+                <li class="print-format">East Ayrshire</li>
+                <li class="print-format">East Dunbartonshire</li>
+                <li class="print-format">East Renfrewshire</li>
+                <li class="print-format">Glasgow</li>
+                <li class="print-format">Inverclyde</li>
+                <li class="print-format">North Ayrshire</li>
+                <li class="print-format">North Lanarkshire</li>
+                <li class="print-format">Renfrewshire</li>
+                <li class="print-format">South Ayrshire</li>
+                <li class="print-format">South Lanarkshire</li>
+                <li class="print-format">West Dunbartonshire</li>
+              </ul>
+            </div>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">Wales</h4>
+              <ul id="warning1Authorities9" class="local-authorities clear-fix">
+                <li class="print-format">Conwy</li>
+                <li class="print-format">Denbighshire</li>
+                <li class="print-format">Flintshire</li>
+                <li class="print-format">Gwynedd</li>
+                <li class="print-format">Isle of Anglesey</li>
+              </ul>
+            </div>
+            <div class="warning-region-list">
+              <h4 class="local-authorities-title">Yorkshire &amp; Humber</h4>
+              <ul id="warning1Authorities10" class="local-authorities clear-fix">
+                <li class="print-format">North Yorkshire</li>
+                <li class="print-format">South Yorkshire</li>
+                <li class="print-format">West Yorkshire</li>
+              </ul>
+            </div>
+          </div>
+          <div class="warning-headline">
+            <h3>Headline</h3>
+            <p>A period of strong winds on Saturday is likely to lead to some transport disruption</p>
+          </div>
+          <div class="warning-what-to-expect">
+            <h3>What should I expect?</h3>
+            <ul>
+              <li>Some delays to road, rail, air and ferry transport are likely</li>
+              <li>It’s likely that some coastal routes, sea fronts and coastal communities will be affected by spray and/or large waves</li>
+              <li>Probably some bus and train services affected, with some journeys taking longer</li>
+              <li>Some short term loss of power and other services is possible</li>
+              <li>Delays for high-sided vehicles on exposed routes and bridges likely</li>
+              <li>There is a small chance of isolated, short term loss of power</li>
+            </ul>
+          </div>
+          <div class="warning-what-should-i-do">
+            <h3>What should I do?</h3>
+            <ul>
+              <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/seasonal-advice/stay-safe-in-strong-wind/stay-safe-in-strong-wind">5 tips for staying safe in strong wind</a></li>
+              <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/seasonal-advice/your-home/stay-safe-in-a-storm/stay-safe-in-a-storm">Stay safe in a storm</a></li>
+              <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/seasonal-advice/travel/travelling-in-storms-rain-and-wind/travelling-in-storms-rain-and-wind">Travelling in storms, rain and strong wind</a></li>
+            </ul>
+          </div>
+          <div class="warning-detail-holder">
+            <h3>Further detail</h3>
+            <p>Strong westerly winds are expected to develop through the course of Saturday, with gusts of 50-60 mph developing quite widely across this region, and a small chance of gusts reaching 70 mph around some coasts and high ground areas. <br><br>
+              This has the potential to cause delays to public transport and some disruption to the road network, which may have a greater than usual impact given the busier pre-Christmas weekend travel. Dangerous coastal conditions can be expected too, with large waves an additional hazard.<br><br>
+              What should I do? <br><br>
+              Give yourself the best chance of avoiding delays by checking road conditions if driving, or bus and train timetables, amending your travel plans if necessary. <br><br>
+              People cope better with power cuts when they have prepared for them in advance. It’s easy to do; consider gathering torches and batteries, a mobile phone power pack and other essential items. <br><br>
+              If you are on the coast, stay safe during stormy weather by being aware of large waves. Even from the shore large breaking waves can sweep you off your feet and out to sea. Take care if walking near cliffs; know your route and keep dogs on a lead. In an emergency, call 999 and ask for the Coastguard. <br><br>
+              Be prepared for weather warnings to change quickly: when a weather warning is issued, the Met Office recommends staying up to date with the weather forecast in your area.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    var src = document.getElementById('source-html')
+    document.getElementsByClassName('xp-content')[0].innerHTML = src.innerHTML
+    document.getElementsByClassName('xp-html')[0].innerText = src.innerHTML
+    var sec = document.getElementsByTagName('section')
+    for (let i = sec.length - 1; i >= 0; i--) {
+      toggle(sec[i])
+      console.log(sec[i])
+    }
+    for (let s of document.getElementsByClassName('testable')) {
+      s.addEventListener('click', (event) => {test(event.target.innerText)})
+    }
+  </script>
+</html>
