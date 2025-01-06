@@ -1,14 +1,44 @@
+:root {
+    --bg1: #eef;
+    --bg2: #ddf;
+    --bg3: #003479;
+}
 body {
     font-family: sans-serif;
     overflow-y: scroll;
+    margin: 0;
 }
 .nav {
     display: grid;
     grid-template-columns: auto auto 1fr auto;
     grid-template-areas: "a b c d";
+    background-color: var(--bg1);
+    padding: 10px;
+    column-gap: 1em;
+}
+.nav a {
+    text-decoration: unset;
+    color: unset;
 }
 .nav span {
-    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    transition: background-color 0.15s ease;
+}
+.nav span:hover {
+    background-color: var(--bg2);
+}
+.nav span.current {
+    font-weight: bolder;
+}
+.main {
+    margin: 10px
+}
+.nav span:first-child {
+    margin-left: 5px;
+}
+.nav span:last-child {
+    margin-right: 5px;
 }
 .nav-a {
     grid-area: a;
@@ -20,23 +50,23 @@ body {
     grid-area: d;
 }
 
-section {
+.section {
     padding: 10px;
-    background-color: #eef;
+    background-color: var(--bg1);
     border-radius: 8px;
     margin-bottom: 0.2em;
     cursor: pointer;
     transition: background-color 0.1s;
 }
-section:hover {
-    background-color: #ddf;
+.section:hover {
+    background-color: var(--bg2);
 }
-section:before {
+.section:before {
     content: '\2bc8';
     margin-right: 5px;
     float: none;
 }
-.active:before {
+.section.active:before {
     content: '\2bc6';
     margin-right: 5px;
     float: none;
@@ -66,13 +96,14 @@ section:before {
     border-radius: 8px;
     height: min-content;
 }
-input[name=xp-expr] {
+input.xp-expr {
     font-family: monospace;
     min-width: 20em;
 }
 .xp-output {
     grid-area: output;
-    max-height: 6em;
+    /* height: 4em; */
+    max-height: 5em;
     overflow-y: scroll;
     font-size: smaller;
     white-space: pre-wrap;
@@ -88,7 +119,8 @@ input[name=xp-expr] {
     column-gap: 1rem;
     overflow-y: scroll;
     height: auto;
-    background-color: #f7f7f7;
+    padding: 5px;
+    background-color: #fafafa;
     border-radius: 8px;
 }
 .xp-content {
@@ -101,19 +133,7 @@ input[name=xp-expr] {
     height: max-content;
     font-family: monospace;
 }
-.highlight {
-    background-color: #d0ff27aa;
-}
-.highlight-attr {
-    background-color: #71fdf2aa;
-}
-.highlight-text {
-    background-color: #fc8135aa;
-}
-.YELLOW {
-    background-color: #fcfc42aa;
-}
-body > h2 {
+h2 {
     text-align: center;
 }
 
@@ -134,13 +154,83 @@ body > h2 {
 }
 summary > h3 {
     display: inline;
-    cursor: pointer;
+}
+summary > h4 {
+    display: inline;
 }
 summary {
     margin-top: 1em;
     margin-bottom: 1em;
+    cursor: pointer;
 }
 .testable {
     text-decoration: underline dotted #888;
     cursor: pointer;
+}
+h5 {
+    margin-bottom: 0.7em;
+}
+
+/* Questions*/
+.exercise {
+    background-color: var(--bg1);
+    border-radius: 5px;
+    margin-bottom: 0.4em;
+    padding: 5px;
+}
+.exercise-container {
+    margin: 5px;
+}
+.exercise span {
+    font-style: italic;
+    font-weight: 500;
+    float: right;
+}
+.exercise-container .extra {
+    color: #777
+}
+.exercise-container li:hover {
+    color: #0b41b6;
+    cursor: pointer;
+}
+.exercise-container li.q-met:before {
+    content: "* ";
+    color: orangered;
+}
+div.masked span.testable {
+    display: none;
+}
+div.solution {
+    padding: 5px;
+    cursor: pointer;
+}
+div.solution p {
+    display: inline;
+    font-size: 0.8em;
+    margin-left: 1.5em;
+}
+div.masked p {
+    display: none;
+}
+div.revealed span.mask {
+    display: none;
+}
+
+/* Other */
+/* .YELLOW {
+    background-color: #fcfc42aa;
+} */
+
+/* XPath highlighting */
+.highlight-example {
+    background-color: #fcafffaa !important;
+}
+.highlight {
+    background-color: #d0ff27aa !important;
+}
+.highlight-attr {
+    background-color: #71fdf2aa !important;
+}
+.highlight-text {
+    background-color: #fc8135aa !important;
 }
