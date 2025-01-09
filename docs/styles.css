@@ -2,6 +2,9 @@
     --bg1: #eef;
     --bg2: #ddf;
     --bg3: #003479;
+    --bg4: #f8f8f8;
+    --bg5: #eee;
+    --bg6: #3278c8;
 }
 body {
     font-family: sans-serif;
@@ -12,7 +15,7 @@ body {
     display: grid;
     grid-template-columns: auto auto 1fr auto;
     grid-template-areas: "a b c d";
-    background-color: var(--bg1);
+    background-color: var(--bg4);
     padding: 10px;
     column-gap: 1em;
 }
@@ -26,13 +29,16 @@ body {
     transition: background-color 0.15s ease;
 }
 .nav span:hover {
-    background-color: var(--bg2);
+    background-color: var(--bg5);
 }
 .nav span.current {
     font-weight: bolder;
 }
+.nav span.link {
+    font-size: 0.85em;
+}
 .main {
-    margin: 10px
+    margin: 10px min(10vw - 20px, 150px);
 }
 .nav span:first-child {
     margin-left: 5px;
@@ -45,6 +51,9 @@ body {
 }
 .nav-b {
     grid-area: b;
+}
+.nav-c {
+    grid-area: c;
 }
 .nav-d {
     grid-area: d;
@@ -73,11 +82,17 @@ body {
 }
 .section-block {
     max-height: 0px;
-    transition: max-height 0.2s ease;
+    transition: max-height 0.1s ease;
     overflow: hidden;
 }
 .section-body {
     padding: 0.3em 0.3em 2em 0.8em
+}
+footer {
+    font-size: 0.75em;
+}
+sup {
+    font-size: 0.7em;
 }
 .xp-container {
     display: grid;
@@ -98,7 +113,13 @@ body {
 }
 input.xp-expr {
     font-family: monospace;
-    min-width: 20em;
+    min-width: 25em;
+    border: 1px solid lightgrey;
+    border-radius: 3px;
+}
+input.xp-expr:focus-visible:not(.unhighlighted) {
+    outline: 0;
+    box-shadow: 0 0 0 1px #222, 0 0 0 3px #b9dc0c
 }
 .xp-output {
     grid-area: output;
@@ -120,7 +141,7 @@ input.xp-expr {
     overflow-y: scroll;
     height: auto;
     padding: 5px;
-    background-color: #fafafa;
+    background-color: var(--bg4);
     border-radius: 8px;
 }
 .xp-content {
@@ -149,6 +170,9 @@ h2 {
     font-family: monospace;
     padding-right: 15px;
 }
+.pad-extra td, th {
+    padding: 5px 15px;
+}
 .mono {
     font-family: monospace;
 }
@@ -170,10 +194,19 @@ summary {
 h5 {
     margin-bottom: 0.7em;
 }
+ul.subtext li > span {
+    display: block;
+    font-size: 0.9em;
+    color: var(--bg6);
+    margin-top: 4px;
+}
+ul.subtext li {
+    margin: 8px 0px 12px 0px;
+}
 
 /* Questions*/
 .exercise {
-    background-color: var(--bg1);
+    background-color: var(--bg4);
     border-radius: 5px;
     margin-bottom: 0.4em;
     padding: 5px;
@@ -181,21 +214,12 @@ h5 {
 .exercise-container {
     margin: 5px;
 }
-.exercise span {
-    font-style: italic;
-    font-weight: 500;
-    float: right;
-}
 .exercise-container .extra {
     color: #777
 }
 .exercise-container li:hover {
     color: #0b41b6;
     cursor: pointer;
-}
-.exercise-container li.q-met:before {
-    content: "* ";
-    color: orangered;
 }
 div.masked span.testable {
     display: none;

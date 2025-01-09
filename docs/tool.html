@@ -1,28 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>XPath Viewer</title>
-    <link rel="stylesheet" href="test.css"/>
+    <title>XPath Tool</title>
+    <link rel="stylesheet" href="styles.css"/>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <script>
-      function toggle(el) {
-        el.classList.toggle('active')
-        let next = el.nextElementSibling
-        // console.log(next.scrollHeight)
-        if (next.style.maxHeight) {
-          next.style.maxHeight = next.scrollHeight + 'px'
-          setTimeout(() => {
-            next.style.maxHeight = null
-          }, 0)
-        } else {
-          next.style.maxHeight = next.scrollHeight + 'px'
-          setTimeout(() => {
-            next.style.maxHeight = 'max-content'
-          }, 200)
-        }
-      }
-    </script>
+    <script src="scripts.js"></script>
     <script type="text/javascript">
       function xp_search(key) {
         // clearTimeout(timeout)
@@ -84,7 +67,7 @@
           return
         }
         currentQ = key
-        timeout = setTimeout(hover_restore, 10000);
+        timeout = setTimeout(hover_restore, 15000);
         hover_show_eval(key)
       }
       function hover_show_eval(key) {
@@ -151,17 +134,12 @@
   </head>
   <body>
     <nav class="nav">
-      <span class="nav-a"><a href="./intro.html">HTML and XPath Introduction</a></span>
-      <span class="nav-b current"><a href="./test.html">XPath tool</a></span>
+      <span class="nav-a link"><a href="./index.html">HTML and XPath Introduction</a></span>
+      <span class="nav-b link current"><a href="./tool.html">XPath tool</a></span>
       <span class="nav-d"></span>
     </nav>
     <div class="main">
-      <h2>HTML resources XPath interactive tool</h2>
-      <section class="section" onclick="toggle(this)">HTML resources</section>
-      <div class="section-block">
-        <div class="section-body">Hello</div>
-      </div>
-
+      <h2>XPath Interactive Tool</h2>
       <section class="section open" onclick="toggle(this)">XPath basics</section>
       <div class="section-block">
         <div class="section-body">
@@ -265,8 +243,8 @@
                 <td>[text() = "value"]</td>
               </tr>
               <tr>
-                <td>Text contains value</td>
-                <td>[contains(text(), "value")]</td>
+                <td>Text/attribute contains value</td>
+                <td>[contains(text(), "value")]<br>[contains(@attribute, "value")]</td>
               </tr>
               <tr>
                 <td>Element has attribute</td>
@@ -275,6 +253,15 @@
               <tr>
                 <td>Element has child of given tag type</td>
                 <td>[tagname]</td>
+              </tr>
+              <tr>
+                <td>Count child elements of given tag type</td>
+                <td>[count(tagname) = n]</td>
+              </tr>
+              <tr>
+                <td>Boolean operators</td>
+                <td>[not(condition)], [condition1 or condition2]<br>
+                  [condition1 and condition2]</td>
               </tr>
             </table>
 
@@ -297,6 +284,10 @@
                 <td>Select all paragraphs that have an ID attribute</td>
               </tr>
               <tr>
+                <td class="testable">//*[count(div) > 3]</td>
+                <td>Select any element (*) that contains more than 3 divs</td>
+              </tr>
+              <tr>
                 <td class="testable">//div[table]</td>
                 <td>Select all <span class="mono">divs</span> that have a table as an
                   immediate child element</td>
@@ -312,16 +303,55 @@
         </div>
       </div>
 
-      <section id="xp-section" class="section open" onclick="toggle(this)">XPath exercises</section>
+      <section id="xp-section" class="section open" onclick="toggle(this)">Practice exercises</section>
       <div class="section-block">
         <div class="section-body">
           <p>The following exercises are based on the XPath content above, including basic paths,
-            selecting attribtues, and using predicates. A HTML extract is shown below along with what
-            it looks like.  Click on exercises to highlight the required output. You may find it
-            helpful to use the Inspect Element tool to traverse the HTML. Questions marked with an
-            asterisk refer to the Met Office extract and may be more challenging.
+            selecting attribtues, and using predicates. Use the XPath tool below to test your answer.
+            Click on each bullet point to highlight in the Met Office extract where the elements are.
+            You may find it helpful to use the Inspect Element tool to traverse the HTML.
           </p>
-          
+          <div>
+            <h4 class="exercise">Basic selection</h4>
+            <div class="exercise-container">
+              <p>Write an XPath expression to select the following elements:</p>
+              <ol>
+                <li id="q1a">The 3 hyperlinks in the "What should I do?" section</li>
+                <li class="extra" id="q1b">The main section headers (Regions affected, Headline, What should I expect?,
+                  What should I do?)</li>
+                <li class="extra" id="q1c">All list items (<span class="mono">li</span>)</li>
+              </ol>
+            </div>
+          </div>
+          <div>
+            <h4 class="exercise">Attributes and text</h4>
+            <div class="exercise-container">
+              <p>Write an XPath expression to select the following <strong>attribute</strong> or <strong>text</strong> values:</p>
+              <ol>
+                <li id="q2a">The text of each hyperlink (<span class="mono">&lt;a&gt;</span>) in the 
+                "What should I do?" section</li>
+                <li class="extra" id="q2b">The <span class="mono">class</span> attribute of all tables in the extract</li>
+              </ol>
+            </div>
+          </div>
+          <div>
+            <h4 class="exercise">Predicates</h4>
+            <div class="exercise-container">
+              <p>Write an XPath expression to select the following, using extra conditions in square brackets:</p>
+              <ol>
+                <li id="q3a">The two lists showing affected regions and local authorities.</li>
+                <li class="extra" id="q3b">Any list that contains at least 4 list items</li>
+                <li class="extra" id="q3c">The end time (12:00) of the weather warning extract</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section id="xp-section" class="section open" onclick="toggle(this)">XPath tool</section>
+      <div class="section-block">
+        <div class="section-body">
+          <p>Use this tool to test the output of XPath expressions against the HTML extract below.</p>
           <div class="xp-container">
             <div class="xp-search">
               <span>XPath expression </span>
@@ -343,62 +373,59 @@
             solutions! Click on the solution to copy it into the XPath tool.
           </p>
           <details open>
-            <summary><h4>Basic selection</h4> - Exercise 1</summary>
+            <summary><h4>Basic selection</h4></summary>
             <div class="masked solution">
-              <span class="mask">Exercise 1.1</span>
-              <span class="testable mono" id="sq1a">div/div/p</span>
-              <p>The paragraphs are nested 2 inside 2 divs</p>
-            </div>
-            <div class="masked solution">
-              <span class="mask">Exercise 1.2</span>
-              <span class="testable mono">div</span>
-              <p>This expression will select all top-level divs. It is the same as using
-                <span class="mono" id="sq1b">./div</span>.
+              <span class="mask">Exercise 1</span>
+              <span class="testable mono">//li/a</span>
+              <p>The hyperlinks are inside the list items of the bullet list. This excludes the hyperlink
+                at the bottom which is not part of a list. Another possible solution is
+                <span class="mono testable" id="sq1a">//ul//a</span>.
               </p>
             </div>
             <div class="masked solution">
-              <span class="mask">Exercise 1.3</span>
+              <span class="mask">Exercise 2</span>
+              <span class="testable mono" id="sq1b">//h3</span>
+              <p>The  headers are all <span class="mono">h3</span> elements. <span class="mono">//</span>
+                 is used because they are nested inside a number of <span class="mono">divs</span></p>
+            </div>
+            <div class="masked solution">
+              <span class="mask">Exercise 3</span>
               <span class="testable mono" id="sq1c">//li</span>
               <p>Use <span class="mono">//</span> to select elements nested at any depth</p>
             </div>
           </details>
           <details open>
-            <summary><h4>Attributes and text</h4> - Exercise 2</summary>
+            <summary><h4>Attributes and text</h4></summary>
             <div class="masked solution">
-              <span class="mask">Exercise 2.1</span>
-              <span class="testable mono" id="sq2a">//li/@id</span>
-              <p>As exercise 1.3, but then selecting the attribute</p>
+              <span class="mask">Exercise 1</span>
+              <span class="testable mono" id="sq2a">//li/a/text()</span>
+              <p></p>
             </div>
             <div class="masked solution">
-              <span class="mask">Exercise 2.2</span>
-              <span class="testable mono" id="sq2b">section/div/div/@class</span>
-              <p>The required <span class="mono">divs</span> are 2 levels deep inside the <span class="mono">&lt;section&gt;</span> tag</p>
-            </div>
-            <div class="masked solution">
-              <span class="mask">Exercise 2.3</span>
-              <span class="testable mono" id="sq2c">///h4/span/text()</span>
-              <p>The exercise numbers are spans inside headers</p>
+              <span class="mask">Exercise 2</span>
+              <span class="testable mono" id="sq2b">//table/@class</span>
+              <p></p>
             </div>
           </details>
           <details open>
-            <summary><h4>Predicates</h4> - Exercise 3</summary>
+            <summary><h4>Predicates</h4></summary>
             <div class="masked solution">
-              <span class="mask">Exercise 3.1</span>
-              <span class="testable mono" id="sq3a">//span[contains(@class, "mono")]/..</span>
-              <p>This works by first finding the required <span class="mono">&lt;span&gt;</span>s, then using
-                <span class="mono">..</span> to get the parent element</p>
+              <span class="mask">Exercise 1</span>
+              <span class="testable mono" id="sq3a">//div[@class="warning-region-list"]/ul</span>
+              <p>The required lists are found inside <span class="mono">divs</span> with this class.
+              Another solution could be <span class="mono testable">//div[@class="regions"]//ul</span></p>
             </div>
             <div class="masked solution">
-              <span class="mask">Exercise 3.2</span>
-              <span class="testable mono" id="sq3b">//div[contains(@class, "warning-region-list")]/ul</span>
-              <p>The required lists are found inside <span class="mono">divs</span> with this class.</p>
+              <span class="mask">Exercise 2</span>
+              <span class="testable mono" id="sq3b">//ul[count(li) >= 4]</span>
+              <p>Use <span class="mono">count()</span> on the list items as the filter.</p>
             </div>
             <div class="masked solution">
-              <span class="mask">Exercise 3.3</span>
-              <span class="testable mono" id="sq3c">//div[contains(@class, "valid-")]/div[1]</span>
-              <p>This uses the fact that the two required are inside elements with the class "valid-to" and
-                "valid-from", and the warning times in particular are the first children (<span class="mono">/div[1]</span>)
-              </p>
+              <span class="mask">Exercise 3</span>
+              <span class="testable mono" id="sq3c">//div[@class="valid-to"]/div[1]</span>
+              <p>This works because the required section has the class <span class="mono">valid-to</span>,
+               then we select the first
+              <span class="mono">div</span> inside.</p>
             </div>
           </details>
         </div>
@@ -407,195 +434,156 @@
       <link rel="stylesheet" href="met_office_warnings.css"/>
       <link rel="stylesheet" href="met_office_common.css"/>
       <div hidden id="source-html">
-<div>
-  <h4 class="exercise">
-    Basic selection
-    <span>Exercise 1</span>
-  </h4>
-  <div class="exercise-container">
-    <p>Write an XPath expression to select the following elements:</p>
-    <ol>
-      <li id="q1a">All paragraphs under question headers ("Write an XPath expression to ...")</li>
-      <li class="extra" id="q1b">All top level <span class="mono">div</span>s, i.e. the ones that contain
-            both the exercise header and exercise text</li>
-      <li class="extra" id="q1c">All list items (<span class="mono">li</span>)</li>
-    </ol>
+
+<h2 class="header-margin">Warning details for UK</h2>
+<div id="warningCard0" class="warning-card" data-warning-id="6a1ceaba-9dd7-49f9-b37b-c194cd671189" data-level="YELLOW">
+<div class="warning-header">
+  <div class="warning-icon YELLOW">
+    <svg class="YELLOW" viewBox="0 0 32 26" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" fill-rule="evenodd">
+      <path d="M16 .477L.447 25.75h31.107L16 .477zM31.997 26h-.247v-.002H32l-.003.002z" stroke="#000" fill="#FFE923" />
+      <path d="M17.371 23.31H14.63v-2.812h2.299c.175 0 .292.036.353.108.06.072.09.187.09.346v2.358zm-2.54-7.334l-.112-1.201a12.23 12.23 0 0 1-.05-1.093V8.966h2.662v4.716c0 .36-.017.725-.05 1.093-.034.368-.07.768-.111 1.2l-.323 3.116h-1.694l-.323-3.115z" fill="#2A2A2A" />
+    </g>
+    </svg>
   </div>
-</div>
-<div>
-  <h4 class="exercise">
-    Attributes and text
-    <span>Exercise 2</span>
-  </h4>
-  <div class="exercise-container">
-    
-    <p>Write an XPath expression to select the following <strong>attribute</strong> or <strong>text</strong> values:</p>
-    <ol>
-      <li id="q2a">The ID attribute of all exercises</li>
-      <li id="q2b" class="q-met">The Class attribute of the three 2nd level <span class="mono">div</span> elements in the
-        Met Office extract. (warning-header, warning-period, warning-description)<br>Begin your expression with
-        <span class="mono">"section"</span> to isolate the Met Office section.</li>
-      <li class="extra" id="q2c">The exercise numbers as text ("Exercise 1", "Exercise 2", ...)</li>
-    </ol>
+  <div class="header-title YELLOW">
+    <div class="title">Yellow warning</div>
+    <div>Snow &amp; ice</div>
   </div>
+  <button class="close-warning YELLOW"><span>×</span></button>
 </div>
-<div>
-  <h4 class="exercise">Predicates
-    <span>Exercise 3</span>
-  </h4>
-  <div class="exercise-container">
-    <p>Write an XPath expression to select the following, using extra conditions in square brackets:</p>
-    <ol>
-      <li id="q3a">Any element that contains a <span class="mono">&lt;span&gt;</span> with monospace font (e.g. Exercise 1.3)</li>
-      <li id="q3b" class="q-met">The two lists in the Met Office extract showing affected regions.</li>
-      <li class="q-met extra" id="q3c">The start and end (00:00 and 12:00) of the weather warning extract</li>
-    </ol>
+<div class="warning-period">
+  <div class="valid-from">
+    <div>00:00</div>
+    <div class="lower date">Today</div>
+  </div>
+  <div class="timezone">
+    <svg class="arrow YELLOW" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" version="1.1" viewBox="0 0 100 10" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <polygon class="shape" points="2,5 0,0 98,0 100,5 98,10 0,10 2,5"></polygon>
+    </svg>
+    <div class="offset">UTC</div>
+  </div>
+  <div class="valid-to">
+    <div>12:00</div>
+    <div class="lower date">Today</div>
   </div>
 </div>
 
-<section class="met-office-extract">
-  <h2 class="header-margin">Warning details for UK</h2>
-  <div id="warningCard0" class="warning-card" data-warning-id="6a1ceaba-9dd7-49f9-b37b-c194cd671189" data-level="YELLOW">
-  <div class="warning-header">
-    <div class="warning-icon YELLOW">
-      <svg class="YELLOW" viewBox="0 0 32 26" xmlns="http://www.w3.org/2000/svg">
-      <g fill="none" fill-rule="evenodd">
-        <path d="M16 .477L.447 25.75h31.107L16 .477zM31.997 26h-.247v-.002H32l-.003.002z" stroke="#000" fill="#FFE923" />
-        <path d="M17.371 23.31H14.63v-2.812h2.299c.175 0 .292.036.353.108.06.072.09.187.09.346v2.358zm-2.54-7.334l-.112-1.201a12.23 12.23 0 0 1-.05-1.093V8.966h2.662v4.716c0 .36-.017.725-.05 1.093-.034.368-.07.768-.111 1.2l-.323 3.116h-1.694l-.323-3.115z" fill="#2A2A2A" />
-      </g>
-      </svg>
-    </div>
-    <div class="header-title YELLOW">
-      <div class="title">Yellow warning</div>
-      <div>Snow &amp; ice</div>
-    </div>
-    <button class="close-warning YELLOW"><span>×</span></button>
-  </div>
-  <div class="warning-period">
-    <div class="valid-from">
-      <div>00:00</div>
-      <div class="lower date">Today</div>
-    </div>
-    <div class="timezone">
-      <svg class="arrow YELLOW" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" version="1.1" viewBox="0 0 100 10" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <polygon class="shape" points="2,5 0,0 98,0 100,5 98,10 0,10 2,5"></polygon>
-      </svg>
-      <div class="offset">UTC</div>
-    </div>
-    <div class="valid-to">
-      <div>12:00</div>
-      <div class="lower date">Today</div>
-    </div>
-  </div>
 
-
-  <div class="warning-description">
-    <div class="warning-regions">
-      <h3>Regions and local authorities affected:</h3>
-      <div class="warning-region-list">
-        <h4 class="local-authorities-title">North East England</h4>
-        <ul id="warning0Authorities1" class="local-authorities clear-fix">
-          <li class="print-format">Darlington</li>
-          <li class="print-format">Durham</li>
-          <li class="print-format">Gateshead</li>
-          <li class="print-format">Hartlepool</li>
-          <li class="print-format">Newcastle upon Tyne</li>
-        </ul>
-      </div>
-      <div class="warning-region-list">
-        <h4 class="local-authorities-title">Yorkshire &amp; Humber</h4>
-        <ul id="warning0Authorities1" class="local-authorities clear-fix">
-          <li class="print-format">West Yorkshire</li>
-        </ul>
-      </div>
-    </div>
-    <div class="warning-headline">
-      <h3>Headline</h3>
-      <p>Further snow in places, along with icy stretches, leading to some disruption, especially to travel.</p>
-    </div>
-    <div class="warning-what-to-expect">
-      <h3>What should I expect?</h3>
-      <ul>
-        <li>Some roads and railways affected with longer journey times by road, bus and train services</li>
-        <li>Icy patches on some untreated roads, pavements and cycle paths</li>
-        <li>Some injuries from slips and falls on icy surfaces</li>
+<div class="warning-description">
+  <div class="warning-regions">
+    <h3>Regions and local authorities affected:</h3>
+    <div class="warning-region-list">
+      <h4 class="local-authorities-title">North East England</h4>
+      <ul id="warning0Authorities0">
+        <li class="print-format">Darlington</li>
+        <li class="print-format">Durham</li>
+        <li class="print-format">Gateshead</li>
+        <li class="print-format">Hartlepool</li>
+        <li class="print-format">Newcastle upon Tyne</li>
       </ul>
     </div>
-    <div class="warning-what-should-i-do">
-      <h3>What should I do?</h3>
-      <ul>
-        <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/seasonal-advice/stay-safe-in-ice/stay-safe-in-ice">4 tips for staying safe in ice</a></li>
-        <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/seasonal-advice/stay-safe-in-snow/stay-safe-in-snow">5 tips for staying safe in snow</a></li>
-        <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/seasonal-advice/health-wellbeing/stay-well-in-winter/stay-well-in-winter">How cold weather affects your health</a></li>
+    <div class="warning-region-list">
+      <h4 class="local-authorities-title">Yorkshire &amp; Humber</h4>
+      <ul id="warning0Authorities1">
+        <li class="print-format">West Yorkshire</li>
       </ul>
     </div>
-    <div class="warning-content-matrix">
-      <h4>Why is the warning yellow?</h4>
-      <p>This warning has a high likelihood and a low impact.</p>
-      <table class="warning-matrix">
-        <tbody>
-          <tr>
-            <th class="x-axis">Very<br>likely</th>
-            <td rowspan="3">
-              <table class="warnings-matrix-inner" title="This warning has a high likelihood and a low impact">
-                <tbody>
-                  <tr>
-                    <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class="yellow selected"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class="amber"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class="red"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                  </tr>
-                  <tr>
-                    <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class="yellow"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class="amber"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class="amber"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                  </tr>
-                  <tr>
-                    <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class="yellow"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class="amber"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                  </tr>
-                  <tr>
-                    <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class="yellow"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                    <td class="yellow"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
-                  </tr>
-                </tbody>
-              </table></td>
-          </tr>
-          <tr>
-            <th><img src="./static/images/warnings/icons/matrix-vertical-arrow.svg" alt="to" width="10" height="58"></th>
-          </tr>
-          <tr><th>Unlikely</th></tr>
-          <tr>
-            <th colspan="2">
-            <table class="y-axis">
+  </div>
+  <div class="warning-headline">
+    <h3>Headline</h3>
+    <p>Further snow in places, along with icy stretches, leading to some disruption, especially to travel.</p>
+  </div>
+  <div class="warning-what-to-expect">
+    <h3>What should I expect?</h3>
+    <ul>
+      <li>Some roads and railways affected with longer journey times by road, bus and train services</li>
+      <li>Icy patches on some untreated roads, pavements and cycle paths</li>
+      <li>Some injuries from slips and falls on icy surfaces</li>
+    </ul>
+  </div>
+  <div class="warning-what-should-i-do">
+    <h3>What should I do?</h3>
+    <ul>
+      <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/seasonal-advice/stay-safe-in-ice/stay-safe-in-ice">
+        4 tips for staying safe in ice</a></li>
+      <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/seasonal-advice/stay-safe-in-snow/stay-safe-in-snow">
+        5 tips for staying safe in snow</a></li>
+      <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/seasonal-advice/health-wellbeing/stay-well-in-winter/stay-well-in-winter">
+        How cold weather affects your health</a></li>
+    </ul>
+  </div>
+  <div class="warning-content-matrix">
+    <h4>Why is the warning yellow?</h4>
+    <p>This warning has a high likelihood and a low impact.</p>
+    <table class="warning-matrix">
+      <tbody>
+        <tr>
+          <th class="x-axis">Very<br>likely</th>
+          <td rowspan="3">
+            <table class="warnings-matrix-inner" title="This warning has a high likelihood and a low impact">
               <tbody>
                 <tr>
-                  <th>Very low<br>impact</th>
-                  <th><img src="./static/images/warnings/icons/matrix-horizontal-arrow.svg" alt="to" width="58" height="10"></th>
-                  <th>High<br>impact</th>
+                  <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class="yellow selected"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class="amber"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class="red"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                </tr>
+                <tr>
+                  <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class="yellow"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class="amber"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class="amber"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                </tr>
+                <tr>
+                  <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class="yellow"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class="amber"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                </tr>
+                <tr>
+                  <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class=""><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class="yellow"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
+                  <td class="yellow"><img src="./static/images/warnings/icons/matrix-tick.svg" alt="✓" width="20" height="14"></td>
                 </tr>
               </tbody>
-            </table></th>
-          </tr>
-        </tbody>
-      </table>
-      <div class="matrix-details-button no-print">
-        <div class="col-xs-11 left">
-          <a href="https://www.metoffice.gov.uk/weather/guides/severe-weather-advice">Impact matrix guide</a>
-        </div>
-        <div class="col-xs-1 right">
-          <span class="chevron-right-black"> </span>
-        </div>
+            </table></td>
+        </tr>
+        <tr>
+          <th><img src="./static/images/warnings/icons/matrix-vertical-arrow.svg" alt="to" width="10" height="58"></th>
+        </tr>
+        <tr><th>Unlikely</th></tr>
+        <tr>
+          <th colspan="2">
+          <table class="y-axis">
+            <tbody>
+              <tr>
+                <th>Very low<br>impact</th>
+                <th><img src="./static/images/warnings/icons/matrix-horizontal-arrow.svg" alt="to" width="58" height="10"></th>
+                <th>High<br>impact</th>
+              </tr>
+            </tbody>
+          </table></th>
+        </tr>
+      </tbody>
+    </table>
+    <div class="matrix-details-button no-print">
+      <div class="col-xs-11 left">
+        <a href="https://www.metoffice.gov.uk/weather/guides/severe-weather-advice">Impact matrix guide</a>
+      </div>
+      <div class="col-xs-1 right">
+        <span class="chevron-right-black"> </span>
       </div>
     </div>
   </div>
-  </div>
-</section>
+  <section class="warning-update-date">
+    <h4>Last updated</h4>
+    <p><time datetime="2025-01-05T10:19:42+00:00"> 10:19 (UTC) on Thu 2 Jan 2025 </time></p>
+    <p class="reason-for-update"><strong>Reason:</strong> The warning period has been extended until mid morning on Friday.</p>
+    </section>
+</div>
+</div>
         
       </div>
       <div hidden id="source-html-2">

@@ -1614,10 +1614,10 @@ input[type="search" i]::-webkit-search-cancel-button {
     height: 100%
 }
 
-:focus-visible:not(.unhighlighted) {
+/* :focus-visible:not(.unhighlighted) {
     outline: 0;
     box-shadow: 0 0 0 2px #000, 0 0 0 5px #b9dc0c
-}
+} */
 
 body {
     /* color: #333; */

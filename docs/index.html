@@ -1,9 +1,126 @@
 <!doctype html>
 <html lang='en'>
   <head>
-    <title>Site index</title>
+    <title>HTML and XPath Introduction</title>
+    <link rel="stylesheet" href="styles.css"/>
+    <script src="scripts.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   </head>
   <body>
-    <p>Hello world!</p>
+    <nav class="nav">
+      <span class="nav-a link current"><a href="./index.html">HTML and XPath Introduction</a></span>
+      <span class="nav-b link"><a href="./tool.html">XPath tool</a></span>
+      <span class="nav-d"></span>
+    </nav>
+    <div class="main">
+      <h2>HTML and XPath Introduction</h2>
+      <p>The information on this page is designed to be a brief introduction to HTML and XPath. For
+        more detailed guides, there are many resources available online such as
+        <a href="https://www.w3schools.com/Html/html_intro.asp">W3Schools</a>.
+      </p>
+      <section class="section open" onclick="toggle(this)">HTML</section>
+      <div class="section-block">
+        <div class="section-body">
+          <h4>Overview</h4>
+          <p>HTML (Hyper Text Markup Language) is a language used to define the structure of web documents.
+            A HTML document consists of a <span class="mono">head</span> and a <span class="mono">body</span>.
+            The head contains information such as the page title, author, language and links to scripts/stylesheets.
+            The body contains the elements that make up the page. It can also include scripts and other information,
+            but the majority of this section is made of the page elements.
+          </p>
+          <p>There are many different elements that can appear on a page, including text paragraphs,
+            lists, headers, tables, images, icons and hyperlinks. There are also elements which are not
+            specific visuals, but act as containers for elements.
+          </p>
+          <h4>HTML tags</h4>
+          <p>Elements on the page form a nested structure. For example, a list may contain 5 individual list
+            items. Parent/child terms are used to describe the relationship between nested elements, as well
+            as descendant (child of child, child of child of child, ...), ancestor (parent of parent, ...), and
+            sibling (elements that share the same parent).
+          </p>
+          <h5>Syntax</h5>
+          <p>The <span class="mono">&lt;tag&gt; ... &lt;/tag&gt;</span> syntax is used to write elements, with
+            an "opening tag" and a "closing tag". Child elements are written with their own tag pairs between
+            the opening and closing tags of their parent. For example, a unordered list, <span class="mono">ul</span>,
+            containing list items, <span class="mono">li</span>.
+            <pre><code>
+  &lt;ul&gt;
+    &lt;li&gt;Item 1&lt;/li&gt;
+    &lt;li&gt;Item 2&lt;/li&gt;
+    &lt;li&gt;Item 3&lt;/li&gt;
+  &lt;/ul&gt;
+            </code></pre>
+          </p>
+          <h5>Common tag names</h5>
+          <p>Below are some common tag names which may be useful when writing XPath expressions.</p>
+          <table class="xp-table pad-extra">
+            <tr>
+              <th rowspan="3">Tables</th>
+              <td>table</td>
+              <td>table itself</td>
+            </tr>
+            <tr>
+              <td>tr</td>
+              <td>table row</td>
+            </tr>
+            <tr>
+              <td>td, th</td>
+              <td>table cell, table header cell</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <section class="section open" onclick="toggle(this)">XPath</section>
+      <div class="section-block">
+        <div class="section-body">
+          <h4>Overview</h4>
+          <p>XPath (XML Path Language) is a language used to select elements/nodes in XML documents<sup>1</sup>
+            by matching a selector. Elements can be selected by using a variety of characteristics:
+            </p>
+            <ul>
+              <li>The type of element (tag name)</li>
+              <li>The element's attributes</li>
+              <li>The text inside the element</li>
+              <li>What child nodes the element contains</li>
+            </ul>
+          <p>Unlike CSS selectors, XPath selectors can match based text nodes and are bidirectional (i.e.,
+            they can select the parent of a matched element).
+          </p>
+          <footer>1. HTML is a type of XML document</footer>
+          <h4>Approach to selecting elements</h4>
+          <p>In order to select elements, a path to the element needs to be written. This will
+            form a unique description of the elements required. Usually, the aim of specifying an XPath
+            path is to select a repeating set of similar elements, though sometimes you will want to
+            select a single element on the page. Below are some suggestions of things to
+            consider when forming a path. 
+          </p>
+          <ul class="subtext">
+            <li>Do the elements all have the same tag name?<span>This is usually the case</span></li>
+            <li>Look the elements' parent elements - are they always the same type?
+              <span>If yes, then the parents could be part of the path</span>
+            </li>
+            <li>Do the elements share an attribute value that is different to other elements of the
+              same type?<span>If yes, then this should be a predicate (filter). The
+                <span class="mono">class</span> attribute is often useful here.</span>
+            </li>
+            <li>Do the elements contain text with a shared substring? <span>If yes, then using
+              a filter like <span class="mono">contains(text(), string)</span> may be useful
+            </span></li>
+            <li>Are the elements always in the same position among their siblings?
+              <span>If yes, then a filter <span class="mono">[n]</span>, <span class="mono">[last()]</span>,
+              or involving <span class="mono">position()</span> may be useful.</span>
+            </li>
+            <li>Does the selection depend on what child elements are inside the element?
+              <span>If yes, then a filter involving child elements will be useful</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <script>
+    for (let s of document.querySelectorAll('section.open')) {
+      toggle(s)
+    }
+    </script>
   </body>
 </html>
